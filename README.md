@@ -64,3 +64,6 @@ $ forge --help
 $ anvil --help
 $ cast --help
 ```
+
+github项目地址为https://github.com/smartcontractkit/chainlink-brownie-contracts
+安装命令为：forge install smartcontractkit/chainlink-brownie-contracts@0.6.1
