@@ -67,3 +67,20 @@ $ cast --help
 
 github项目地址为https://github.com/smartcontractkit/chainlink-brownie-contracts
 安装命令为：forge install smartcontractkit/chainlink-brownie-contracts@0.6.1
+
+
+-v的个数的含义
+```
+Verbosity levels:
+- 2: Print logs for all tests
+- 3: Print execution traces for failing tests
+- 4: Print execution traces for all tests, and setup traces for failing tests
+- 5: Print execution and setup traces for all tests
+```
+
+forge test --mt testPriceFeedVersionIsAccurate
+
+测试覆盖率
+forge coverage --fork-url $SEPOLIA_RPC_URL 
+
+部署合约时，如果直接在测试合约中new xx(),那么msg.sender就为测试合约。如果是用了vm.startBroadcast();其实msg.sender就是我们的默认外部账号的地址。这个地址和anvil链上没有关系。这是测试内置的账号。

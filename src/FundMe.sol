@@ -5,13 +5,14 @@
 // SPDX-License-Identifier: MIT
 pragma solidity 0.8.19;
 
+import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {PriceConverter} from "./PriceConverter.sol";
 import {MathLibrary} from "./MathLibrary.sol";
 using MathLibrary for uint256;
 using PriceConverter for uint256;
 
 contract FundMe {
-    address immutable I_OWNER;
+    address public immutable I_OWNER;
     uint256 public constant MINIMUM_USD = 10 * 10 ** 18;
 
     address[] public funders;
@@ -22,9 +23,10 @@ contract FundMe {
 
     error NotOwner(string message);
     error failWithdraw(string message);
-
-    constructor() {
+    AggregatorV3Interface private s_priceFeed;
+    constructor(address priceFeed) {
         I_OWNER = msg.sender;
+        s_priceFeed = AggregatorV3Interface(priceFeed);
     }
 
     modifier onlyOwner() {
@@ -41,7 +43,7 @@ contract FundMe {
     // uint256 public myValue = 1;
     function fund() public payable {
         // myValue = myValue + 3;
-        require(msg.value.getConversionRate() >= MINIMUM_USD, "not enough eth");
+        require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "not enough eth");
         funders.push(msg.sender);
         addressToAmountFunded[msg.sender] += msg.value;
         contributionCount[msg.sender] += 1;
@@ -104,5 +106,10 @@ contract FundMe {
 
     function addOne(uint256 _what) public view onlyAfter(1768635464) {
         _what += 1;
+    }
+
+    function getVersion() public view returns(uint256) {
+        // AggregatorV3Interface dataFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+        return s_priceFeed.version();
     }
 }

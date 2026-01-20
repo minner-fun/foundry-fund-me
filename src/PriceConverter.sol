@@ -5,10 +5,10 @@ import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/Ag
 
 library PriceConverter{
 
-    function getDataFeedEth() internal pure returns (AggregatorV3Interface){
-        AggregatorV3Interface dataFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
-        return dataFeed;
-    }
+    // function getDataFeedEth() internal pure returns (AggregatorV3Interface){
+    //     AggregatorV3Interface dataFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
+    //     return dataFeed;
+    // }
 
     function getDataFeedBtc() internal pure returns (AggregatorV3Interface){
         AggregatorV3Interface dataFeedBtcWithEth = AggregatorV3Interface(0x5fb1616F78dA7aFC9FF79e0371741a747D2a7F22);
@@ -16,9 +16,8 @@ library PriceConverter{
     }
 
 
-    function getChainlinkDataFeedLatestAnswer() internal view returns (uint256) {
+    function getChainlinkDataFeedLatestAnswer(AggregatorV3Interface dataFeed) internal view returns (uint256) {
 
-        AggregatorV3Interface dataFeed = getDataFeedEth();
         (
         /* uint80 roundId */
         ,
@@ -38,36 +37,31 @@ library PriceConverter{
         return uint256(price);
     }
 
-    function getChainlinkDataFeedLatestVersion() internal view returns (uint256 version){
-        AggregatorV3Interface dataFeed = getDataFeedEth();
+    function getChainlinkDataFeedLatestVersion(AggregatorV3Interface dataFeed) internal view returns (uint256 version){
         version = dataFeed.version();
     }
 
-    function getChainlinkDataFeedLatestdecimals() internal view returns (uint8){
-        AggregatorV3Interface dataFeed = getDataFeedEth();
+    function getChainlinkDataFeedLatestdecimals(AggregatorV3Interface dataFeed) internal view returns (uint8){
         return dataFeed.decimals();
     }
 
-        // Function to get the price of Ethereum in USD
-    function getPrice() internal pure returns(uint256) {
-        // AggregatorV3Interface dataFeed = getDataFeedEth();
+    function getPrice(AggregatorV3Interface dataFeed) internal view returns(uint256) {
 
-        // (,int price,,,) = dataFeed.latestRoundData();
-        int256 price = 2000 * 1e18;
+        (,int price,,,) = dataFeed.latestRoundData();
+        // int256 price = 2000 * 1e18;
 
-        // return uint256(price) * 1E10;
-        return uint256(price);
+        return uint256(price) * 1E10;
+        // return uint256(price);
     }
 
-    // Function to convert a value based on the price
-    function getConversionRate(uint256 ethAmount) internal pure returns(uint256) {
-        uint256 ethPrice = getPrice();
+    function getConversionRate(uint256 ethAmount, AggregatorV3Interface _dataFeed) internal view returns(uint256) {
+        uint256 ethPrice = getPrice(_dataFeed);
         uint256 ethAmountInUsd = (ethPrice * ethAmount) / 1e18;
         return ethAmountInUsd;
     }
 
-    function conversUstToEth(uint256 usdAmount) internal pure returns(uint256){
-        uint256 ethPric = getPrice();
+    function conversUstToEth(uint256 usdAmount, AggregatorV3Interface _dataFeed) internal view returns(uint256){
+        uint256 ethPric = getPrice(_dataFeed);
         uint256 ethAmount = usdAmount * 1e18 / ethPric;
         return ethAmount;
     }
