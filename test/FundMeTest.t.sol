@@ -5,17 +5,18 @@ import {Test, console2} from "forge-std/Test.sol";
 import {FundMe} from "../src/FundMe.sol";
 import {DeployFundMe} from "../script/DeployFundMe.s.sol";
 
-contract FundMeTest is Test{
-
+contract FundMeTest is Test {
     FundMe fundMe;
     DeployFundMe deployFundMe;
 
-    function setUp() external{
+    uint256 constant GAS_PRICE;
+
+    function setUp() external {
         deployFundMe = new DeployFundMe();
         fundMe = deployFundMe.run();
     }
 
-    function testMinimumDollarIsFive() public view{
+    function testMinimumDollarIsFive() public view {
         assertEq(fundMe.MINIMUM_USD(), 10e18);
     }
 
@@ -27,11 +28,10 @@ contract FundMeTest is Test{
         console2.log("msg.sender", msg.sender);
         assertEq(fundMe.I_OWNER(), msg.sender);
     }
-    
+
     function testPriceFeedVersionIsAccurate() public view {
         uint256 version = fundMe.getVersion();
         console2.log("version: ", version);
         assertEq(version, 4);
     }
-
 }
