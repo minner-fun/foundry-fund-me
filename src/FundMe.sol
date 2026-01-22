@@ -12,12 +12,12 @@ using MathLibrary for uint256;
 using PriceConverter for uint256;
 
 contract FundMe {
-    address public immutable I_OWNER;
+    address private immutable I_OWNER;
     uint256 public constant MINIMUM_USD = 10 * 10 ** 18;
 
-    address[] public funders;
-    mapping(address => uint256) public addressToAmountFunded;
-    mapping(address => uint256) public contributionCount;
+    address[] private s_funders;
+    mapping(address => uint256) private s_addressToAmountFunded;
+    mapping(address => uint256) private s_contributionCount;
 
     uint256[] public numbers;
 
@@ -44,9 +44,9 @@ contract FundMe {
     function fund() public payable {
         // myValue = myValue + 3;
         require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "not enough eth");
-        funders.push(msg.sender);
-        addressToAmountFunded[msg.sender] += msg.value;
-        contributionCount[msg.sender] += 1;
+        s_funders.push(msg.sender);
+        s_addressToAmountFunded[msg.sender] += msg.value;
+        s_contributionCount[msg.sender] += 1;
     }
 
     // requires the user to send less than 1 Gwei
@@ -57,14 +57,14 @@ contract FundMe {
     // owner can withdrawn funds
     function withdraw() public onlyOwner {
         uint256 index;
-        for (index = 0; index < funders.length; index++) {
-            address funder = funders[index];
-            addressToAmountFunded[funder] = 0;
+        for (index = 0; index < s_funders.length; index++) {
+            address funder = s_funders[index];
+            s_addressToAmountFunded[funder] = 0;
         }
         // funders = new address[](funders.length);
 
-        for (index = 0; index < funders.length; index++) {
-            funders[index] = address(0);
+        for (index = 0; index < s_funders.length; index++) {
+            s_funders[index] = address(0);
         }
         (bool success, ) = payable(I_OWNER).call{value: address(this).balance}(
             ""
@@ -111,5 +111,17 @@ contract FundMe {
     function getVersion() public view returns(uint256) {
         // AggregatorV3Interface dataFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
         return s_priceFeed.version();
+    }
+
+    function getAddressToAmountFunded(address fundingAddress) public view returns(uint256){
+        return s_addressToAmountFunded[fundingAddress];
+    }
+
+    function getFunder(uint256 index) public view returns(address){
+        return s_funders[index];
+    }
+
+    function getOwner() public view returns(address){
+        return I_OWNER;
     }
 }
