@@ -97,3 +97,6 @@ uint160 是可以直接转为 address类型， uint256不行
 hoax = deal + prank 直接加eth + 换msg.sender
 
 chisel 是一个交互环境
+
+gas消耗
+forge snapshot --mt testOwnerIsMsgSender
