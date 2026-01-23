@@ -107,6 +107,28 @@ contract FundMeTest is Test {
         assertEq(startingOwnerBalance + startingFundMeBalance, endingOwnerBalance);
     }
 
+    function testCheaperWithdrawFromASingleFunder() public funded{
+        uint256 startingFundMeBalance = address(fundMe).balance;
+        uint256 startingOwnerBalance = owner.balance;
+
+        vm.txGasPrice(GAS_PRICE);
+        uint256 gasStart = gasleft();
+
+        vm.startPrank(owner);
+        fundMe.cheaperWithdraw();
+        vm.stopPrank();
+
+        uint256 gasEnd = gasleft();
+        uint256 gasUsed = (gasStart - gasEnd) * tx.gasprice;
+        console2.log("Withdraw consumed: %d gas", gasUsed);
+        console2.log("tx.gasprice", tx.gasprice);
+
+        uint256 endingFundMeBalance = address(fundMe).balance;
+        uint256 endingOwnerBalance = owner.balance;
+        assertEq(endingFundMeBalance, 0);
+        assertEq(startingOwnerBalance + startingFundMeBalance, endingOwnerBalance);
+    }
+
     function testWithdrawFromMultipleFunders() public funded{
         uint160 numberOfFunders = 10;
         uint160 startingFunderIndex = 1;
