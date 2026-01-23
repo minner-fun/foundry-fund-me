@@ -100,3 +100,11 @@ chisel 是一个交互环境
 
 gas消耗
 forge snapshot --mt testOwnerIsMsgSender
+
+gasleft() solidity的方法，返回剩余的gas
+tx.gasprice; solidity中的属性，当前的交易的gas价格
+
+vm.txGasPrice(GAS_PRICE); foundry的作弊码，用来改变tx.gasprice
+
+vm.load();  加载存储数据
+forge inspect FundMe storageLayout 查看存储超结构

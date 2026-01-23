@@ -14,7 +14,7 @@ using PriceConverter for uint256;
 contract FundMe {
     address private immutable I_OWNER;
     uint256 public constant MINIMUM_USD = 10 * 10 ** 18;
-
+    AggregatorV3Interface private s_priceFeed;
     address[] private s_funders;
     mapping(address => uint256) private s_addressToAmountFunded;
     mapping(address => uint256) private s_contributionCount;
@@ -23,7 +23,7 @@ contract FundMe {
 
     error NotOwner(string message);
     error failWithdraw(string message);
-    AggregatorV3Interface private s_priceFeed;
+    
     constructor(address priceFeed) {
         I_OWNER = msg.sender;
         s_priceFeed = AggregatorV3Interface(priceFeed);
@@ -123,5 +123,8 @@ contract FundMe {
 
     function getOwner() public view returns(address){
         return I_OWNER;
+    }
+    function getPriceFeed() public view returns(AggregatorV3Interface){
+        return s_priceFeed;
     }
 }

@@ -88,9 +88,18 @@ contract FundMeTest is Test {
     function testWithdrawFromASingleFunder() public funded{
         uint256 startingFundMeBalance = address(fundMe).balance;
         uint256 startingOwnerBalance = owner.balance;
+
+        vm.txGasPrice(GAS_PRICE);
+        uint256 gasStart = gasleft();
+
         vm.startPrank(owner);
         fundMe.withdraw();
         vm.stopPrank();
+
+        uint256 gasEnd = gasleft();
+        uint256 gasUsed = (gasStart - gasEnd) * tx.gasprice;
+        console2.log("Withdraw consumed: %d gas", gasUsed);
+        console2.log("tx.gasprice", tx.gasprice);
 
         uint256 endingFundMeBalance = address(fundMe).balance;
         uint256 endingOwnerBalance = owner.balance;
@@ -122,6 +131,15 @@ contract FundMeTest is Test {
         assert(startingFundMeBalance + startingOwnerBalance == fundMe.getOwner().balance);
         assert((numberOfFunders + 1) * SEND_VALUE == fundMe.getOwner().balance - startingOwnerBalance);
         console2.log(fundMe.getOwner().balance - startingOwnerBalance);
+    }
+
+    function testPrintStorageData() public{
+        for (uint256 i = 0; i<3; i++){
+            bytes32 value = vm.load(address(fundMe), bytes32(i));
+            console2.log("Value at location", i, ":");
+            console2.logBytes32(value);
+        }
+        console2.log("PriceFeed address:", address(fundMe.getPriceFeed()));
     }
 
 }
