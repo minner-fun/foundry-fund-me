@@ -8,6 +8,7 @@ pragma solidity 0.8.19;
 import {AggregatorV3Interface} from "@chainlink/contracts/src/v0.8/interfaces/AggregatorV3Interface.sol";
 import {PriceConverter} from "./PriceConverter.sol";
 import {MathLibrary} from "./MathLibrary.sol";
+
 using MathLibrary for uint256;
 using PriceConverter for uint256;
 
@@ -23,7 +24,7 @@ contract FundMe {
 
     error NotOwner(string message);
     error failWithdraw(string message);
-    
+
     constructor(address priceFeed) {
         I_OWNER = msg.sender;
         s_priceFeed = AggregatorV3Interface(priceFeed);
@@ -66,15 +67,13 @@ contract FundMe {
         for (index = 0; index < s_funders.length; index++) {
             s_funders[index] = address(0);
         }
-        (bool success, ) = payable(I_OWNER).call{value: address(this).balance}(
-            ""
-        );
+        (bool success,) = payable(I_OWNER).call{value: address(this).balance}("");
         if (!success) {
             revert failWithdraw("withdraw fail");
         }
     }
 
-    function cheaperWithdraw() public onlyOwner{
+    function cheaperWithdraw() public onlyOwner {
         uint256 fundersLength = s_funders.length;
         uint256 index;
         for (index = 0; index < fundersLength; index++) {
@@ -82,7 +81,7 @@ contract FundMe {
             s_addressToAmountFunded[funder] = 0;
         }
         s_funders = new address[](0);
-        (bool success, ) = payable(I_OWNER).call{value: address(this).balance}("");
+        (bool success,) = payable(I_OWNER).call{value: address(this).balance}("");
         require(success, "Call Failed");
     }
 
@@ -97,17 +96,14 @@ contract FundMe {
     }
 
     function callAmountTo(address _to) public {
-        (bool success, ) = payable(_to).call{value: 100000}("");
+        (bool success,) = payable(_to).call{value: 100000}("");
         if (!success) {
             revert();
         }
     }
 
     function withdrawOnlyAccountRemix() public {
-        require(
-            msg.sender == 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4,
-            "only first account can do this"
-        );
+        require(msg.sender == 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4, "only first account can do this");
         withdraw();
     }
 
@@ -120,23 +116,24 @@ contract FundMe {
         _what += 1;
     }
 
-    function getVersion() public view returns(uint256) {
+    function getVersion() public view returns (uint256) {
         // AggregatorV3Interface dataFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
         return s_priceFeed.version();
     }
 
-    function getAddressToAmountFunded(address fundingAddress) public view returns(uint256){
+    function getAddressToAmountFunded(address fundingAddress) public view returns (uint256) {
         return s_addressToAmountFunded[fundingAddress];
     }
 
-    function getFunder(uint256 index) public view returns(address){
+    function getFunder(uint256 index) public view returns (address) {
         return s_funders[index];
     }
 
-    function getOwner() public view returns(address){
+    function getOwner() public view returns (address) {
         return I_OWNER;
     }
-    function getPriceFeed() public view returns(AggregatorV3Interface){
+
+    function getPriceFeed() public view returns (AggregatorV3Interface) {
         return s_priceFeed;
     }
 }

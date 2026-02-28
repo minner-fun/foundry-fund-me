@@ -101,10 +101,7 @@ contract FundMeTest is Test {
         uint256 endingFundMeBalance = address(fundMe).balance;
         uint256 endingOwnerBalance = owner.balance;
         assertEq(endingFundMeBalance, 0);
-        assertEq(
-            startingOwnerBalance + startingFundMeBalance,
-            endingOwnerBalance
-        );
+        assertEq(startingOwnerBalance + startingFundMeBalance, endingOwnerBalance);
     }
 
     function testCheaperWithdrawFromASingleFunder() public funded {
@@ -126,20 +123,13 @@ contract FundMeTest is Test {
         uint256 endingFundMeBalance = address(fundMe).balance;
         uint256 endingOwnerBalance = owner.balance;
         assertEq(endingFundMeBalance, 0);
-        assertEq(
-            startingOwnerBalance + startingFundMeBalance,
-            endingOwnerBalance
-        );
+        assertEq(startingOwnerBalance + startingFundMeBalance, endingOwnerBalance);
     }
 
     function testWithdrawFromMultipleFunders() public funded {
         uint160 numberOfFunders = 10;
         uint160 startingFunderIndex = 1;
-        for (
-            uint160 i = startingFunderIndex;
-            i < numberOfFunders + startingFunderIndex;
-            i++
-        ) {
+        for (uint160 i = startingFunderIndex; i < numberOfFunders + startingFunderIndex; i++) {
             hoax(address(i), SEND_VALUE);
             fundMe.fund{value: SEND_VALUE}();
         }
@@ -153,20 +143,11 @@ contract FundMeTest is Test {
         uint256 endingFundMeBalance = address(fundMe).balance;
         uint256 endingOwnerBalance = owner.balance;
         assertEq(endingFundMeBalance, 0);
-        assertEq(
-            startingOwnerBalance + startingFundMeBalance,
-            endingOwnerBalance
-        );
+        assertEq(startingOwnerBalance + startingFundMeBalance, endingOwnerBalance);
 
         assert(address(fundMe).balance == 0);
-        assert(
-            startingFundMeBalance + startingOwnerBalance ==
-                fundMe.getOwner().balance
-        );
-        assert(
-            (numberOfFunders + 1) * SEND_VALUE ==
-                fundMe.getOwner().balance - startingOwnerBalance
-        );
+        assert(startingFundMeBalance + startingOwnerBalance == fundMe.getOwner().balance);
+        assert((numberOfFunders + 1) * SEND_VALUE == fundMe.getOwner().balance - startingOwnerBalance);
         console2.log(fundMe.getOwner().balance - startingOwnerBalance);
     }
 
