@@ -22,8 +22,8 @@ contract FundMe {
 
     uint256[] public numbers;
 
-    error NotOwner(string message);
-    error failWithdraw(string message);
+    error FundMe__NotOwner(string message);
+    error FundMe_FailWithdraw(string message);
 
     constructor(address priceFeed) {
         I_OWNER = msg.sender;
@@ -32,7 +32,7 @@ contract FundMe {
 
     modifier onlyOwner() {
         if (msg.sender != I_OWNER) {
-            revert NotOwner("only owner can de this");
+            revert FundMe__NotOwner("only owner can de this");
         }
         // require(msg.sender == i_Owner, "only owner can de this");
         _;
@@ -69,7 +69,7 @@ contract FundMe {
         }
         (bool success,) = payable(I_OWNER).call{value: address(this).balance}("");
         if (!success) {
-            revert failWithdraw("withdraw fail");
+            revert FundMe_FailWithdraw("withdraw fail");
         }
     }
 
