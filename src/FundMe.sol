@@ -20,7 +20,7 @@ contract FundMe {
     mapping(address => uint256) private s_addressToAmountFunded;
     mapping(address => uint256) private s_contributionCount;
 
-    uint256[] public numbers;
+    // uint256[] public numbers;
 
     error FundMe__NotOwner(string message);
     error FundMe_FailWithdraw(string message);
@@ -32,7 +32,7 @@ contract FundMe {
 
     modifier onlyOwner() {
         if (msg.sender != I_OWNER) {
-            revert FundMe__NotOwner("only owner can de this");
+            revert FundMe__NotOwner("only owner can de this"); // save gas
         }
         // require(msg.sender == i_Owner, "only owner can de this");
         _;
@@ -43,7 +43,6 @@ contract FundMe {
     // have a minimum of $ send
     // uint256 public myValue = 1;
     function fund() public payable {
-        // myValue = myValue + 3;
         require(msg.value.getConversionRate(s_priceFeed) >= MINIMUM_USD, "not enough eth");
         s_funders.push(msg.sender);
         s_addressToAmountFunded[msg.sender] += msg.value;
@@ -89,18 +88,6 @@ contract FundMe {
         return a.add(b);
     }
 
-    function pushNumber() public {
-        for (uint256 index = 0; index < 10; index++) {
-            numbers.push(index);
-        }
-    }
-
-    function callAmountTo(address _to) public {
-        (bool success,) = payable(_to).call{value: 100000}("");
-        if (!success) {
-            revert();
-        }
-    }
 
     function withdrawOnlyAccountRemix() public {
         require(msg.sender == 0x5B38Da6a701c568545dCfcB03FcB875f56beddC4, "only first account can do this");
@@ -117,7 +104,6 @@ contract FundMe {
     }
 
     function getVersion() public view returns (uint256) {
-        // AggregatorV3Interface dataFeed = AggregatorV3Interface(0x694AA1769357215DE4FAC081bf1f309aDC325306);
         return s_priceFeed.version();
     }
 

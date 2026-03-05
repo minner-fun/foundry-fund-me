@@ -151,7 +151,7 @@ contract FundMeTest is Test {
         console2.log(fundMe.getOwner().balance - startingOwnerBalance);
     }
 
-    function testPrintStorageData() public {
+    function testPrintStorageData() public view {
         for (uint256 i = 0; i < 3; i++) {
             bytes32 value = vm.load(address(fundMe), bytes32(i));
             console2.log("Value at location", i, ":");
