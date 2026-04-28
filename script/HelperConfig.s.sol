@@ -23,6 +23,8 @@ contract HelperConfig is Script {
             activeNetworkConfig = getMainnetEthConfig();
         } else if (block.chainid == 42161) {
             activeNetworkConfig = getArbitrumEthConfig();
+        } else if (block.chainid == 10143) {
+            activeNetworkConfig = getMonadTestnetConfig();
         } else {
             activeNetworkConfig = getAnvilConfig();
         }
@@ -41,6 +43,19 @@ contract HelperConfig is Script {
     function getArbitrumEthConfig() public pure returns (NetworkConfig memory) {
         NetworkConfig memory sepoliaConfig = NetworkConfig({priceFeed: 0x639Fe6ab55C921f74e7fac1ee960C0B6293ba612});
         return sepoliaConfig;
+    }
+
+    function getMonadTestnetConfig() public returns (NetworkConfig memory) {
+        if (activeNetworkConfig.priceFeed != address(0)) {
+            return activeNetworkConfig;
+        }
+
+        // vm.startBroadcast();
+        mockPriceFeed = new MockV3Aggregator(DECIMALS, INITAL_PRICE);
+        // vm.stopBroadcast();
+
+        NetworkConfig memory monadTestnetConfig = NetworkConfig({priceFeed: address(mockPriceFeed)});
+        return monadTestnetConfig;
     }
 
     function getAnvilConfig() public returns (NetworkConfig memory) {
